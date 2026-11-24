@@ -1,0 +1,664 @@
+:root {
+  --green-dark: #1e5631;
+  --green: #2e7d32;
+  --green-light: #e8f5e9;
+  --gold: #f5a623;
+  --text: #2b2b2b;
+  --muted: #6b6b6b;
+  --border: #d9d9d9;
+  --danger: #c62828;
+
+  /* Display Settings (2026-08k) - surface colors. Every background that
+     used to be a hardcoded #fff/#fafafa/etc. throughout this file now
+     goes through one of these instead, which is what makes dark mode
+     (below) a single override block rather than a rule duplicated per
+     component. See render_display_settings_widget() in
+     includes/functions.php and assets/js/display_settings.js. */
+  --bg-page: #fafafa;
+  --bg-card: #ffffff;
+  --bg-input: #ffffff;
+  --bg-hover: #f4f4f4;
+  --bg-subtle: #f0f0f0;
+  --success-bg: #e6f4ea;
+  --success-text: #1e5631;
+  --success-border: #b7dfc0;
+  --error-bg: #fdecea;
+  --error-border: #f5c6cb;
+}
+
+/* Dark mode (2026-08k). Deliberately NOT a blanket filter:invert - each
+   token is tuned by hand so brand green/gold stay recognizable and text
+   stays readable, per the spec this was built against. data-theme is set
+   on <html> as early as possible (assets/js/display_settings.js, loaded
+   in <head>) to avoid a flash of the light theme before this applies. */
+:root[data-theme="dark"] {
+  --green-dark: #173f22;
+  --green: #4caf50;
+  --green-light: #1c3324;
+  --gold: #f5a623;
+  --text: #ececec;
+  --muted: #a3a3a3;
+  --border: #3a3f3c;
+  --danger: #ff6b6b;
+
+  --bg-page: #14181a;
+  --bg-card: #1e2225;
+  --bg-input: #23282b;
+  --bg-hover: #262b2e;
+  --bg-subtle: #2a2f32;
+  --success-bg: #163524;
+  --success-text: #8fd6a0;
+  --success-border: #2f5c3f;
+  --error-bg: #3a1e1e;
+  --error-border: #5c2b2b;
+}
+
+/* Text Size (2026-08k). The rest of this stylesheet uses hardcoded px
+   font-sizes throughout rather than a rem scale, so a root-font-size
+   approach wouldn't reach most components. `zoom` scales layout and text
+   together proportionally (unlike transform:scale, which needs manual
+   container-size compensation), so existing forms/tables/nav/cards keep
+   their proportions instead of overflowing or clipping. Not part of the
+   CSS spec, but has long-standing broad browser support. */
+html[data-text-size="small"] { zoom: 0.9; }
+html[data-text-size="large"] { zoom: 1.15; }
+
+/* Reduce Motion (2026-08k). Two independent triggers so the OS-level
+   accessibility preference is always honored even if the manual toggle
+   is off - see the prefers-reduced-motion query below, which is NOT
+   gated behind [data-reduce-motion]. */
+html[data-reduce-motion="on"] *,
+html[data-reduce-motion="on"] *::before,
+html[data-reduce-motion="on"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * ,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+* { box-sizing: border-box; }
+/* Safety net for the whole [hidden]-attribute bug class: any component
+   class that sets `display` unconditionally would otherwise silently
+   override the browser's default `[hidden] { display: none }` UA rule,
+   since author styles always win over UA styles. This !important rule
+   guarantees `hidden` always actually hides the element, site-wide. */
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: var(--text);
+  background: var(--bg-page);
+  line-height: 1.5;
+  transition: background-color .15s ease, color .15s ease;
+}
+
+/* Anchor targets (About/Guidelines/Contact deep-links from the nav dropdowns)
+   should land below the sticky header instead of right underneath it. */
+html { scroll-padding-top: 90px; }
+[id] { scroll-margin-top: 90px; }
+
+.site-header {
+  background: var(--green-dark);
+  color: #fff;
+  padding: 14px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  transition: box-shadow .2s ease;
+}
+.site-header.is-scrolled { box-shadow: 0 4px 14px rgba(0,0,0,0.25); }
+.site-header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.site-logo {
+  width: 58px;
+  height: 58px;
+  border-radius: 5%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.brand-title { font-size: 30px; font-weight: 800; }
+.brand-subtitle { font-size: 16px; font-weight: 700; opacity: 0.95; max-width: 380px; }
+
+/* ---- Dropdown navigation ---- */
+.site-nav { display: flex; align-items: center; gap: 18px; flex: 1; justify-content: flex-end; flex-wrap: wrap; }
+.nav-menu { list-style: none; display: flex; align-items: center; gap: 4px; margin: 0; padding: 0; }
+.nav-item { position: relative; }
+
+.nav-link {
+  background: none; border: none; color: #fff; font-size: 14px; font-family: inherit;
+  padding: 10px 12px; cursor: pointer; display: flex; align-items: center; gap: 4px;
+  border-radius: 4px; white-space: nowrap;
+}
+.nav-link:hover, .nav-item.active .nav-link { background: rgba(255,255,255,0.12); }
+.nav-link .caret { font-size: 10px; opacity: 0.8; transition: transform .15s ease; }
+.nav-item.is-open .nav-link .caret { transform: rotate(180deg); }
+
+.dropdown-menu {
+  list-style: none; margin: 0; padding: 8px 0;
+  position: absolute; top: calc(100% + 6px); left: 0; min-width: 220px;
+  background: var(--bg-card); color: var(--text); border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+  opacity: 0; visibility: hidden; transform: translateY(-6px);
+  transition: opacity .15s ease, transform .15s ease, visibility .15s;
+  z-index: 250;
+}
+.nav-item:hover > .dropdown-menu,
+.nav-item.is-open > .dropdown-menu {
+  opacity: 1; visibility: visible; transform: translateY(0);
+}
+.dropdown-menu li a {
+  display: block; padding: 9px 18px; color: var(--text); text-decoration: none; font-size: 14px;
+}
+.dropdown-menu li a:hover { background: var(--green-light); color: var(--green-dark); }
+
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+.nav-cta { background: var(--gold); color: var(--green-dark) !important; padding: 8px 14px; border-radius: 4px; font-weight: 600; text-decoration: none; font-size: 14px; }
+.nav-admin { border: 1px solid rgba(255,255,255,0.5); color: #fff; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 14px; }
+.nav-admin:hover { background: rgba(255,255,255,0.12); }
+
+.nav-hamburger {
+  display: none; flex-direction: column; justify-content: center; gap: 5px;
+  width: 34px; height: 34px; background: none; border: none; cursor: pointer; padding: 0;
+}
+.nav-hamburger span { display: block; width: 100%; height: 2px; background: #fff; border-radius: 2px; transition: transform .2s ease, opacity .2s ease; }
+.nav-hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.nav-hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+@media (max-width: 900px) {
+  .nav-hamburger { display: flex; }
+  .site-nav {
+    display: none; width: 100%; flex-basis: 100%; justify-content: flex-start;
+    background: var(--green-dark); order: 3;
+  }
+  .site-nav.is-open { display: block; padding-top: 10px; }
+  .nav-menu { flex-direction: column; align-items: stretch; gap: 0; width: 100%; }
+  .nav-link { width: 100%; justify-content: space-between; color: #fff; }
+  .dropdown-menu {
+    position: static; opacity: 1; visibility: visible; transform: none; box-shadow: none;
+    background: rgba(255,255,255,0.06); border-radius: 0; padding: 0;
+    max-height: 0; overflow: hidden; transition: max-height .2s ease;
+  }
+  .nav-item.is-open > .dropdown-menu { max-height: 500px; padding: 4px 0; }
+  .dropdown-menu li a { color: #fff; padding: 9px 30px; }
+  .dropdown-menu li a:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  .nav-actions { flex-direction: column; align-items: stretch; width: 100%; padding: 12px 0; gap: 8px; }
+  .nav-cta, .nav-admin { text-align: center; }
+  .lang-switcher-trigger { justify-content: center; width: 100%; }
+  .lang-switcher-menu { position: static; margin-top: 8px; width: 100%; }
+  .display-settings-trigger { width: 100%; }
+  .display-settings-panel { position: static; margin-top: 8px; width: 100%; }
+}
+
+/* =======================================================================
+   Language switcher (2026-08) - 🌐 dropdown in the public nav bar and the
+   Student Portal topbar. Markup rendered by
+   includes/functions.php::render_language_switcher(); open/close/select
+   behavior wired by assets/js/i18n.js.
+   ======================================================================= */
+.lang-switcher { position: relative; }
+.lang-switcher-trigger {
+  display: flex; align-items: center; gap: 6px; font-family: inherit; font-size: 14px;
+  background: none; border: 1px solid rgba(255,255,255,0.5); color: #fff;
+  padding: 6px 10px; border-radius: 4px; cursor: pointer;
+}
+.lang-switcher-trigger:hover { background: rgba(255,255,255,0.12); }
+.lang-switcher-current { display: flex; align-items: center; gap: 6px; }
+.lang-switcher-caret { font-size: 10px; opacity: 0.8; }
+.lang-switcher-menu {
+  list-style: none; margin: 8px 0 0; padding: 6px 0;
+  position: absolute; top: 100%; right: 0; min-width: 210px;
+  background: var(--bg-card); color: var(--text); border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18); z-index: 250;
+}
+.lang-switcher-menu[hidden] { display: none; }
+.lang-switcher-menu li { margin: 0; }
+.lang-switcher-menu button {
+  width: 100%; display: flex; align-items: center; gap: 10px; font-family: inherit;
+  background: none; border: none; text-align: left; padding: 9px 14px; font-size: 14px;
+  cursor: pointer; color: var(--text);
+}
+.lang-switcher-menu button:hover,
+.lang-switcher-menu button.active { background: var(--green-light); color: var(--green-dark); }
+.lang-flag { font-size: 18px; line-height: 1; }
+.lang-names { display: flex; flex-direction: column; flex: 1; gap: 1px; }
+.lang-native { font-weight: 500; }
+.lang-english { font-size: 12px; color: var(--muted); }
+.lang-switcher-check { color: var(--green); font-weight: 700; }
+
+/* =======================================================================
+   Display Settings (2026-08k) - ⚙ dropdown in the public nav bar,
+   deliberately styled to match .lang-switcher above (same trigger/panel/
+   button shape, sitting right next to it in the header). Markup rendered
+   by includes/functions.php::render_display_settings_widget(); open/
+   close/select/persist behavior wired by assets/js/display_settings.js.
+   The actual theme colors this panel (and everything else) responds to
+   are the CSS variables defined at the top of this file, overridden by
+   :root[data-theme="dark"].
+   ======================================================================= */
+.display-settings { position: relative; }
+.display-settings-trigger {
+  display: flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; font-size: 16px; line-height: 1;
+  background: none; border: 1px solid rgba(255,255,255,0.5); color: #fff;
+  border-radius: 4px; cursor: pointer;
+}
+.display-settings-trigger:hover { background: rgba(255,255,255,0.12); }
+.display-settings-panel {
+  margin: 8px 0 0; padding: 4px 0 12px;
+  position: absolute; top: 100%; right: 0; width: 280px;
+  background: var(--bg-card); color: var(--text); border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18); z-index: 250;
+}
+.display-settings-panel[hidden] { display: none; }
+.display-settings-header {
+  font-weight: 700; color: var(--green-dark); padding: 12px 16px 8px;
+  border-bottom: 1px solid var(--border); margin-bottom: 4px;
+}
+.display-settings-section { padding: 8px 16px; border-bottom: 1px solid var(--border); }
+.display-settings-section:last-of-type { border-bottom: none; }
+.display-settings-section h4 {
+  margin: 0 0 6px; font-size: 11px; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--muted);
+}
+.display-settings-option {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  font-family: inherit; background: none; border: none; text-align: left;
+  padding: 8px 6px; font-size: 14px; border-radius: 6px; cursor: pointer; color: var(--text);
+}
+.display-settings-option:hover,
+.display-settings-option.active { background: var(--green-light); color: var(--green-dark); }
+.display-settings-check { color: var(--green); font-weight: 700; opacity: 0; }
+.display-settings-option.active .display-settings-check { opacity: 1; }
+.text-size-row { display: flex; align-items: stretch; gap: 6px; }
+.text-size-btn {
+  flex: 1; font-family: inherit; background: var(--bg-hover); border: 1px solid var(--border);
+  color: var(--text); padding: 8px 6px; font-size: 13px; border-radius: 6px; cursor: pointer;
+}
+.text-size-btn:hover { border-color: var(--green); }
+.text-size-btn.active { background: var(--green); border-color: var(--green); color: #fff; font-weight: 600; }
+.reduce-motion-row { display: flex; align-items: center; justify-content: space-between; font-size: 14px; }
+.reduce-motion-toggle {
+  font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: .03em;
+  background: var(--bg-hover); border: 1px solid var(--border); color: var(--muted);
+  padding: 5px 12px; border-radius: 20px; cursor: pointer; min-width: 46px;
+}
+.reduce-motion-toggle.is-on { background: var(--green); border-color: var(--green); color: #fff; }
+.display-settings-footer { padding: 10px 16px 0; }
+.display-settings-footer .btn-link { padding: 4px 0; font-size: 13px; }
+.display-settings-reset-msg { margin: 6px 0 0; font-size: 12px; }
+
+@media (max-width: 480px) {
+  .display-settings-panel { width: calc(100vw - 32px); right: -8px; }
+}
+
+.site-main { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+.hero {
+  background: var(--green-light);
+  border-radius: 8px;
+  padding: 40px 24px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+.hero h1 { color: var(--green-dark); margin-top: 0; }
+.hero-sy { font-size: 16px; }
+
+.btn-cta, .btn-primary {
+  display: inline-block;
+  background: var(--green);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+}
+.btn-cta:hover, .btn-primary:hover { background: var(--green-dark); }
+
+.section { margin-bottom: 36px; }
+.section h2 { color: var(--green-dark); border-bottom: 2px solid var(--green-light); padding-bottom: 8px; }
+
+.announcement-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.announcement-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+.announcement-card h3 { margin-top: 0; color: var(--green-dark); }
+.announcement-card-image { width: 100%; max-height: 200px; object-fit: cover; border-radius: 6px; margin-bottom: 12px; }
+
+.req-list, .steps-list { padding-left: 20px; }
+.req-list li, .steps-list li { margin-bottom: 6px; }
+
+.muted { color: var(--muted); }
+
+.alert { padding: 14px 18px; border-radius: 6px; margin-bottom: 20px; }
+.alert-error { background: var(--error-bg); color: var(--danger); border: 1px solid var(--error-border); }
+.alert-success { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
+.alert ul { margin: 0; padding-left: 18px; }
+
+.detail-table { width: 100%; border-collapse: collapse; background: var(--bg-card); }
+.detail-table th, .detail-table td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 14px; }
+.detail-table th { background: var(--bg-hover); width: 160px; }
+
+.enroll-form { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 24px; }
+.enroll-form h3 { color: var(--green-dark); margin-top: 28px; }
+.enroll-form h3:first-child { margin-top: 0; }
+.form-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+.form-row label { flex: 1 1 220px; display: flex; flex-direction: column; font-size: 14px; font-weight: 600; gap: 4px; }
+.form-row label.full { flex: 1 1 100%; }
+.enroll-form input[type=text], .enroll-form input[type=email], .enroll-form input[type=date],
+.enroll-form input[type=password], .enroll-form input[type=file], .enroll-form select, .enroll-form textarea {
+  font-weight: normal;
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 14px;
+  background: var(--bg-input);
+  color: var(--text);
+}
+.form-actions { margin-top: 20px; }
+.field-error { color: var(--danger); font-size: 12px; font-weight: normal; min-height: 14px; display: block; }
+
+/* .btn-secondary / .btn-link also exist in admin.css (Student Portal /
+   admin panel) - duplicated here with the same definitions because the
+   public site only loads style.css, and the enrollment wizard below uses
+   both. */
+.btn-secondary { background: var(--bg-card); color: var(--green-dark); border: 1px solid var(--green); padding: 10px 18px; border-radius: 5px; cursor: pointer; text-decoration: none; display: inline-block; font-size: 14px; }
+.btn-secondary:hover { background: var(--green-light); }
+.btn-link { color: var(--muted); text-decoration: none; padding: 10px 4px; background: none; border: none; cursor: pointer; font-size: 14px; }
+.btn-link:hover { color: var(--green-dark); }
+
+/* =======================================================================
+   Multi-applicant-type enrollment wizard (2026-08d), enroll.php
+   ======================================================================= */
+.wizard-stepper {
+  display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0 0 24px; padding: 0;
+  counter-reset: none;
+}
+.wizard-stepper li {
+  flex: 1 1 140px; text-align: center; padding: 10px 8px; font-size: 13px; font-weight: 600;
+  color: var(--muted); background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px;
+  position: relative;
+}
+.wizard-stepper li.wizard-step-active { color: #fff; background: var(--green); border-color: var(--green); }
+.wizard-stepper li.wizard-step-done { color: var(--green-dark); background: var(--green-light); border-color: var(--green-light); }
+
+.wizard-panel {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 20px;
+}
+.wizard-panel h3 { color: var(--green-dark); margin-top: 0; }
+.wizard-panel input[type=text], .wizard-panel input[type=email], .wizard-panel input[type=date],
+.wizard-panel input[type=password], .wizard-panel input[type=file], .wizard-panel select, .wizard-panel textarea {
+  font-weight: normal; padding: 9px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px;
+  background: var(--bg-input); color: var(--text);
+}
+.wizard-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; gap: 12px; }
+.wizard-nav .btn-cta { margin-left: auto; }
+
+.field-locked { background: var(--bg-hover); color: var(--muted); cursor: not-allowed; }
+
+/* Applicant type cards */
+.applicant-type-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 8px;
+}
+.applicant-card {
+  position: relative; border: 2px solid var(--border); border-radius: 10px; padding: 20px 16px; text-align: center;
+  cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease; background: var(--bg-card);
+}
+.applicant-card:hover:not(.applicant-card-disabled) { border-color: var(--green); box-shadow: 0 6px 18px rgba(30,86,49,0.12); transform: translateY(-2px); }
+.applicant-card:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.applicant-card.selected { border-color: var(--green); background: var(--green-light); box-shadow: 0 6px 18px rgba(30,86,49,0.15); }
+.applicant-card-disabled { cursor: not-allowed; opacity: 0.6; }
+.applicant-card-check {
+  position: absolute; top: 10px; right: 12px; width: 22px; height: 22px; border-radius: 50%; background: var(--green);
+  color: #fff; font-size: 13px; line-height: 22px; opacity: 0; transform: scale(0.6); transition: opacity .15s ease, transform .15s ease;
+}
+.applicant-card.selected .applicant-card-check { opacity: 1; transform: scale(1); }
+.applicant-card-icon { font-size: 36px; margin-bottom: 8px; }
+.applicant-card-title { font-weight: 700; color: var(--green-dark); font-size: 16px; }
+.applicant-card-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.applicant-card-desc { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
+.coming-soon-badge {
+  position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background: var(--gold); color: var(--green-dark);
+  font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap;
+}
+
+/* ALS Pathway sub-step (2026-08i) - mirrors .applicant-card styling so it
+   reads as a natural continuation of the Applicant Type step rather than a
+   separate design. */
+.als-pathway-section { margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--border); }
+.als-pathway-section h4 { color: var(--green-dark); font-size: 15px; margin: 0 0 12px; }
+.als-pathway-grid {
+  /* Only one pathway card renders as of 2026-08j (the other two were
+     removed, not just disabled) - centered flex with a capped card width
+     reads as a clean single info card instead of a grid cell stretched to
+     the full row width. Still degrades fine if a pathway is ever added
+     back (wraps to a second card next to it). */
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;
+}
+.als-pathway-card {
+  position: relative; border: 2px solid var(--border); border-radius: 10px; padding: 24px 20px; text-align: center;
+  cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease; background: var(--bg-card);
+  width: 100%; max-width: 360px;
+}
+.als-pathway-card:hover:not(.als-pathway-card-disabled) { border-color: var(--green); box-shadow: 0 6px 18px rgba(30,86,49,0.12); transform: translateY(-2px); }
+.als-pathway-card:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.als-pathway-card.selected { border-color: var(--green); background: var(--green-light); box-shadow: 0 6px 18px rgba(30,86,49,0.15); }
+.als-pathway-card-disabled { cursor: not-allowed; opacity: 0.6; }
+.als-pathway-card .applicant-card-check { position: absolute; top: 10px; right: 12px; }
+.als-pathway-card.selected .applicant-card-check { opacity: 1; transform: scale(1); }
+.als-pathway-icon { font-size: 32px; margin-bottom: 8px; }
+.als-pathway-title { font-weight: 700; color: var(--green-dark); font-size: 15px; }
+
+/* Old Student lookup */
+.lookup-found-card { display: flex; gap: 16px; align-items: flex-start; background: var(--green-light); border: 1px solid #b7dfc0; border-radius: 8px; padding: 16px; margin-top: 14px; }
+.lookup-found-photo { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.lookup-found-details p { margin: 2px 0; }
+.lookup-found-name { font-weight: 700; color: var(--green-dark); font-size: 16px; }
+.lookup-next-grade { color: var(--green-dark); margin-top: 8px !important; }
+
+/* Searchable school directory */
+.school-search { position: relative; }
+.school-search-results {
+  position: absolute; top: 100%; left: 0; right: 0; margin-top: 4px; background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); max-height: 260px; overflow-y: auto; z-index: 50;
+}
+.school-search-results[hidden] { display: none; }
+.school-result-item { padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--border); }
+.school-result-item:last-child { border-bottom: none; }
+.school-result-item:hover { background: var(--green-light); }
+.school-result-name { display: block; font-weight: 600; font-size: 14px; color: var(--text); }
+.school-result-meta { display: block; font-size: 12px; color: var(--muted); }
+.school-result-empty { padding: 12px 14px; color: var(--muted); font-size: 13px; }
+.school-not-listed { display: flex !important; flex-direction: row !important; align-items: center; gap: 6px; font-weight: normal !important; font-size: 13px !important; margin-top: 8px; }
+.school-not-listed input[type=checkbox] { width: auto; }
+
+/* Region/Province/Level filter dropdowns above the school search box
+   (2026-08h) - narrow the text search, shown for New/Transferee/Balik-Aral
+   alike (Level filter itself is hidden for New via JS, always Elementary). */
+.school-search-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.school-search-filters select {
+  flex: 1 1 150px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px;
+  font-size: 13px; font-weight: normal; background: var(--bg-card);
+}
+
+/* Read-only "auto-fill" detail card shown after picking a school from the
+   directory search (2026-08f: DepEd directory upgrade) - mirrors the
+   record on file instead of asking the applicant to retype it. */
+.school-autofill-card {
+  margin-top: 10px; padding: 10px 14px; background: var(--green-light);
+  border: 1px solid var(--green); border-radius: 6px; font-size: 13px;
+}
+.school-autofill-row { display: flex; justify-content: space-between; gap: 10px; padding: 3px 0; }
+.school-autofill-row span { color: var(--muted); font-weight: normal; }
+.school-autofill-row strong { color: var(--text); font-weight: 600; text-align: right; }
+
+/* Review step */
+.review-summary { margin: 0; }
+.review-row { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.review-row dt { flex: 0 0 200px; font-weight: 600; color: var(--muted); font-size: 13px; }
+.review-row dd { margin: 0; flex: 1; font-size: 14px; }
+
+@media (max-width: 700px) {
+  .wizard-stepper li { flex: 1 1 45%; font-size: 12px; }
+  .review-row { flex-direction: column; gap: 2px; }
+  .review-row dt { flex-basis: auto; }
+  .lookup-found-card { flex-direction: column; align-items: center; text-align: center; }
+}
+
+/* Self-service Student Portal signup box (enroll.php success screen) and
+   any other password fields rendered on the public site. Mirrors the
+   Student Portal's own admin.css rules so student.js works unmodified. */
+.password-field { position: relative; display: flex; }
+.password-field input { flex: 1; padding-right: 56px !important; }
+.password-toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--green-dark); font-size: 12px; cursor: pointer; padding: 4px 6px; }
+
+.password-rules { list-style: none; padding: 0; margin: 10px 0; font-size: 12px; color: var(--muted); }
+.password-rules li { padding: 2px 0; }
+.password-rules li::before { content: '\2022  '; }
+.password-rules li.rule-valid { color: var(--green-dark); }
+.password-rules li.rule-valid::before { content: '\2713  '; }
+
+/* Username availability + confirm-password match indicator (enroll.php
+   Create Your Student Portal Account section). */
+.field-availability { display: block; font-size: 12px; font-weight: normal; min-height: 16px; margin-top: 4px; }
+.field-availability.availability-ok { color: var(--green-dark); }
+.field-availability.availability-taken { color: var(--danger); }
+.field-availability.availability-checking { color: var(--muted); }
+
+/* Password strength meter */
+.password-strength-meter { margin: 10px 0 4px; }
+.password-strength-bar { height: 6px; border-radius: 3px; background: var(--bg-subtle); overflow: hidden; }
+.password-strength-fill { height: 100%; width: 0; border-radius: 3px; transition: width .2s ease, background-color .2s ease; }
+.password-strength-fill.strength-weak { background: var(--danger); }
+.password-strength-fill.strength-medium { background: var(--gold); }
+.password-strength-fill.strength-strong { background: var(--green); }
+.password-strength-label { display: block; font-size: 12px; font-weight: 600; margin-top: 4px; }
+.password-strength-label.strength-weak { color: var(--danger); }
+.password-strength-label.strength-medium { color: #8a6d1d; }
+.password-strength-label.strength-strong { color: var(--green-dark); }
+
+code { background: var(--bg-subtle); padding: 2px 6px; border-radius: 4px; }
+
+.site-footer { text-align: center; color: var(--muted); padding: 24px; font-size: 13px; border-top: 1px solid var(--border); }
+
+@media (max-width: 700px) {
+  .site-header-inner { flex-direction: column; align-items: flex-start; }
+}
+
+/* =======================================================================
+   About SABNAHIS module (2026-08)
+   ======================================================================= */
+
+.about-hero {
+  background-color: var(--green-dark);
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  margin-bottom: 32px;
+  overflow: hidden;
+}
+.about-hero-overlay {
+  background: linear-gradient(180deg, rgba(30,86,49,0.55), rgba(30,86,49,0.85));
+  color: #fff;
+  text-align: center;
+  padding: 60px 24px;
+}
+.about-hero-logo { width: 84px; height: 84px; border-radius: 8px; object-fit: cover; margin-bottom: 14px; }
+.about-hero h1 { margin: 0 0 6px; font-size: 34px; }
+.about-hero-motto { font-style: italic; font-size: 16px; opacity: 0.95; margin: 0 0 10px; }
+.about-hero-desc { max-width: 640px; margin: 0 auto; font-size: 15px; opacity: 0.95; }
+
+.rich-content img { max-width: 100%; border-radius: 6px; }
+.rich-content p:first-child { margin-top: 0; }
+
+.about-history-row { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+.about-history-image { flex: 0 0 320px; max-width: 100%; border-radius: 8px; object-fit: cover; }
+.about-history-row .rich-content { flex: 1 1 320px; }
+
+.about-vm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.about-vm-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 22px; }
+.about-vm-card h2 { margin-top: 0; }
+
+.about-card-grid-public { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+.about-value-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 22px; text-align: center; transition: transform .15s ease, box-shadow .15s ease; }
+.about-value-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+.about-value-icon { font-size: 34px; margin-bottom: 8px; }
+.about-value-card h3 { color: var(--green-dark); margin: 6px 0; }
+
+.about-facility-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: transform .15s ease, box-shadow .15s ease; }
+.about-facility-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+.about-facility-card img { width: 100%; height: 170px; object-fit: cover; display: block; }
+.about-facility-card-body { padding: 16px; }
+.about-facility-card-body h3 { margin: 0 0 6px; color: var(--green-dark); }
+
+.about-gallery-public-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+.about-gallery-public-item img {
+  width: 100%; height: 150px; object-fit: cover; border-radius: 6px; cursor: zoom-in;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.about-gallery-public-item img:hover { transform: scale(1.03); box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
+
+.about-lightbox {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 30px;
+}
+.about-lightbox[hidden] { display: none; }
+.about-lightbox img { max-width: 90vw; max-height: 80vh; object-fit: contain; border-radius: 6px; }
+.about-lightbox p { color: #fff; font-size: 14px; max-width: 80vw; text-align: center; }
+.about-lightbox-close { position: absolute; top: 20px; right: 30px; background: none; border: none; color: #fff; font-size: 32px; cursor: pointer; line-height: 1; }
+
+.about-principal-card { display: flex; gap: 28px; align-items: flex-start; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 28px; flex-wrap: wrap; box-shadow: 0 4px 16px rgba(0,0,0,0.04); }
+.about-principal-photo { width: 140px; height: 140px; object-fit: cover; border-radius: 50%; flex-shrink: 0; border: 3px solid var(--green-light); }
+.about-principal-photo-placeholder { display: flex; align-items: center; justify-content: center; background: var(--bg-subtle); }
+.about-principal-photo-placeholder svg { width: 56px; height: 56px; fill: #b9bfb9; }
+.about-principal-body { flex: 1 1 320px; }
+.about-principal-quote { margin: 0; padding-left: 20px; border-left: 4px solid var(--gold); font-size: 16px; line-height: 1.7; color: var(--text); }
+.about-principal-signoff { margin-top: 18px; text-align: right; }
+.about-principal-signature { max-height: 60px; margin-left: auto; display: block; }
+.about-principal-name { font-weight: 700; color: var(--green-dark); margin: 8px 0 0; }
+.about-principal-position { margin: 2px 0 0; }
+.about-principal-contact { margin: 2px 0 0; font-size: 12px; }
+
+.about-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }
+.about-stat-card { background: var(--green-light); border-radius: 8px; padding: 24px 12px; text-align: center; }
+.about-stat-number { font-size: 32px; font-weight: 800; color: var(--green-dark); }
+.about-stat-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+.about-downloads-list { list-style: none; padding: 0; }
+.about-downloads-list li { margin-bottom: 8px; }
+.about-downloads-list a { display: inline-block; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 10px 16px; text-decoration: none; color: var(--text); }
+.about-downloads-list a:hover { border-color: var(--green); color: var(--green-dark); }
+
+.about-contact-row { display: flex; gap: 24px; flex-wrap: wrap; align-items: stretch; }
+.about-contact-list { list-style: none; padding: 0; flex: 1 1 280px; }
+.about-contact-list li { margin-bottom: 8px; }
+.about-map { flex: 1 1 320px; min-width: 260px; height: 260px; border: none; border-radius: 8px; }
+
+.about-social-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.about-social-link { background: var(--green-dark); color: #fff; padding: 10px 18px; border-radius: 20px; text-decoration: none; font-size: 14px; font-weight: 600; }
+.about-social-link:hover { background: var(--green); }
+
+@media (max-width: 700px) {
+  .about-hero-overlay { padding: 40px 16px; }
+  .about-hero h1 { font-size: 26px; }
+}

@@ -1,0 +1,479 @@
+:root {
+  --green-dark: #1e5631;
+  --green: #2e7d32;
+  --green-light: #e8f5e9;
+  --gold: #f5a623;
+  --text: #2b2b2b;
+  --muted: #6b6b6b;
+  --border: #d9d9d9;
+  --danger: #c62828;
+  --blue: #1565c0;
+}
+* { box-sizing: border-box; }
+/* Safety net for the whole [hidden]-attribute bug class: any component
+   class that sets `display` unconditionally (e.g. .btn-secondary, .photo-crop-modal,
+   .about-lightbox) would otherwise silently override the browser's default
+   `[hidden] { display: none }` UA rule, since author styles always win over
+   UA styles. This !important rule guarantees `hidden` always actually hides
+   the element, site-wide, regardless of what other CSS targets it. */
+[hidden] { display: none !important; }
+body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; color: var(--text); background: #f2f4f2; }
+
+.admin-topbar {
+  background: var(--green-dark); color: #fff; padding: 12px 20px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.topbar-title { font-weight: 700; font-size: 18px; }
+.topbar-search { display: flex; gap: 6px; flex: 1; max-width: 360px; margin: 0 20px; }
+.topbar-search input { flex: 1; padding: 6px 10px; border-radius: 4px; border: none; font-size: 13px; }
+.topbar-search button { padding: 6px 12px; border-radius: 4px; border: none; background: rgba(255,255,255,0.2); color: #fff; cursor: pointer; font-size: 13px; }
+.topbar-search button:hover { background: rgba(255,255,255,0.3); }
+.topbar-user { display: flex; align-items: center; gap: 14px; font-size: 14px; }
+.btn-logout { color: #fff; background: rgba(255,255,255,0.15); padding: 6px 14px; border-radius: 4px; text-decoration: none; }
+
+/* =======================================================================
+   Language switcher (2026-08) - Student Portal topbar. Same component as
+   the public site's assets/css/style.css version (dark-green header bar,
+   white popup menu); duplicated here since the Student Portal loads
+   admin.css instead of style.css. Markup: render_language_switcher();
+   behavior: assets/js/i18n.js.
+   ======================================================================= */
+.lang-switcher { position: relative; }
+.lang-switcher-trigger {
+  display: flex; align-items: center; gap: 6px; font-family: inherit; font-size: 14px;
+  background: none; border: 1px solid rgba(255,255,255,0.5); color: #fff;
+  padding: 6px 10px; border-radius: 4px; cursor: pointer;
+}
+.lang-switcher-trigger:hover { background: rgba(255,255,255,0.12); }
+.lang-switcher-current { display: flex; align-items: center; gap: 6px; }
+.lang-switcher-caret { font-size: 10px; opacity: 0.8; }
+.lang-switcher-menu {
+  list-style: none; margin: 8px 0 0; padding: 6px 0;
+  position: absolute; top: 100%; right: 0; min-width: 210px;
+  background: #fff; color: var(--text); border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18); z-index: 250;
+}
+.lang-switcher-menu[hidden] { display: none; }
+.lang-switcher-menu li { margin: 0; }
+.lang-switcher-menu button {
+  width: 100%; display: flex; align-items: center; gap: 10px; font-family: inherit;
+  background: none; border: none; text-align: left; padding: 9px 14px; font-size: 14px;
+  cursor: pointer; color: var(--text);
+}
+.lang-switcher-menu button:hover,
+.lang-switcher-menu button.active { background: var(--green-light); color: var(--green-dark); }
+.lang-flag { font-size: 18px; line-height: 1; }
+.lang-names { display: flex; flex-direction: column; flex: 1; gap: 1px; }
+.lang-native { font-weight: 500; }
+.lang-english { font-size: 12px; color: var(--muted); }
+.lang-switcher-check { color: var(--green); font-weight: 700; }
+
+.admin-body { display: flex; min-height: calc(100vh - 56px); }
+.admin-sidebar { width: 220px; background: #fff; border-right: 1px solid var(--border); padding: 16px 0; }
+.admin-sidebar ul { list-style: none; margin: 0; padding: 0; }
+.admin-sidebar li a { display: block; padding: 12px 20px; color: var(--text); text-decoration: none; font-size: 14px; }
+.admin-sidebar li.active a, .admin-sidebar li a:hover { background: var(--green-light); color: var(--green-dark); font-weight: 600; }
+.admin-sidebar li.nav-heading { padding: 14px 20px 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); border-top: 1px solid var(--border); margin-top: 6px; }
+
+.admin-main { flex: 1; padding: 24px 28px; }
+.admin-footer { text-align: center; padding: 14px; font-size: 12px; color: var(--muted); background: #fff; border-top: 1px solid var(--border); }
+
+.page-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
+
+.stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
+.stat-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 20px; text-align: center; }
+.stat-card.highlight { border-color: var(--gold); background: #fffaf0; }
+.stat-value { font-size: 30px; font-weight: 700; color: var(--green-dark); }
+.stat-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+.panel { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+.panel-header { display: flex; justify-content: space-between; align-items: center; }
+
+.announcement-list { list-style: none; padding: 0; margin: 0; }
+.announcement-list li { border-bottom: 1px solid var(--border); padding: 12px 0; }
+.announcement-list li:last-child { border-bottom: none; }
+.announcement-list-row { display: flex; gap: 14px; align-items: flex-start; }
+.announcement-thumb { width: 90px; height: 90px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); background: #fff; flex-shrink: 0; }
+.announcement-thumb-placeholder { display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--muted); text-align: center; background: #f4f4f4; }
+
+.data-table { width: 100%; border-collapse: collapse; background: #fff; }
+.data-table th, .data-table td { border: 1px solid var(--border); padding: 10px 12px; font-size: 14px; text-align: left; }
+.data-table th { background: #f4f4f4; }
+.data-table .actions a, .data-table .actions button { margin-right: 8px; font-size: 13px; text-decoration: none; color: var(--blue); background: none; border: none; cursor: pointer; padding: 0; }
+.data-table .actions a.danger, .data-table .actions .link-danger { color: var(--danger); }
+
+/* Bulk selection: checkbox column + sticky action toolbar, shared by
+   Student Management and Teacher Management list pages. */
+.data-table th.checkbox-col, .data-table td.checkbox-col { width: 34px; text-align: center; padding: 8px; }
+.bulk-toolbar {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+  background: #fff; border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 14px; margin-bottom: 14px;
+  position: sticky; top: 0; z-index: 5;
+}
+.bulk-toolbar .selected-count { font-size: 13px; color: var(--muted); margin-right: auto; }
+.bulk-toolbar button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.detail-table { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
+.detail-table th, .detail-table td { border: 1px solid var(--border); padding: 8px 12px; font-size: 14px; text-align: left; }
+.detail-table th { background: #f4f4f4; width: 160px; }
+
+.filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; align-items: center; }
+.filter-bar input, .filter-bar select { padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; }
+
+.form-inline { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.form-inline input, .form-inline select { padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; }
+
+.form-grid { display: flex; flex-direction: column; gap: 6px; }
+.form-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+.form-row label, .form-grid > label { flex: 1 1 220px; display: flex; flex-direction: column; font-size: 14px; font-weight: 600; gap: 4px; }
+.form-row label.full, .form-grid > label.full { flex: 1 1 100%; }
+.form-grid input, .form-grid select, .form-grid textarea {
+  font-weight: normal; padding: 9px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px;
+}
+.form-actions { margin-top: 10px; display: flex; gap: 10px; }
+
+.btn-primary { background: var(--green); color: #fff; border: none; padding: 10px 18px; border-radius: 5px; cursor: pointer; text-decoration: none; display: inline-block; font-size: 14px; }
+.btn-primary:hover { background: var(--green-dark); }
+.btn-secondary { background: #fff; color: var(--green-dark); border: 1px solid var(--green); padding: 10px 18px; border-radius: 5px; cursor: pointer; text-decoration: none; display: inline-block; font-size: 14px; }
+.btn-danger { background: var(--danger); color: #fff; border: none; padding: 10px 18px; border-radius: 5px; cursor: pointer; font-size: 14px; }
+.btn-small { font-size: 13px; color: var(--blue); text-decoration: none; }
+.btn-link { color: var(--muted); text-decoration: none; padding: 10px 4px; }
+.btn-tab { padding: 8px 14px; border: 1px solid var(--border); border-radius: 20px; text-decoration: none; color: var(--text); font-size: 13px; }
+.btn-tab.active { background: var(--green-dark); color: #fff; border-color: var(--green-dark); }
+.link-danger { background: none; border: none; color: var(--danger); cursor: pointer; text-decoration: underline; font-size: 13px; padding: 0; }
+.link-success { background: none; border: none; color: var(--green-dark); cursor: pointer; text-decoration: underline; font-size: 13px; padding: 0; }
+.link-plain { background: none; border: none; color: var(--blue); cursor: pointer; text-decoration: underline; font-size: 13px; padding: 0; }
+
+.data-table tbody tr.row-editing td { background: #fff8e1; }
+
+.badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+.badge-pending { background: #fff3cd; color: #8a6d1d; }
+.badge-approved { background: #d4edda; color: #1e7e34; }
+.badge-rejected { background: #f8d7da; color: #a71d2a; }
+.badge-enrolled { background: #d1e7ff; color: #0b4d94; }
+.badge-reupload { background: #fde2c8; color: #8a4b0a; }
+.badge-locked { background: #f8d7da; color: #a71d2a; }
+.badge-active { background: #d4edda; color: #1e7e34; }
+.badge-inactive { background: #e2e3e5; color: #383d41; }
+.badge-verified { background: #d4edda; color: #1e7e34; }
+.badge-important { background: #fde2c8; color: #8a4b0a; }
+.badge-urgent { background: #f8d7da; color: #a71d2a; }
+.badge-normal { background: #e3f2fd; color: #0b4d94; }
+.badge-cancelled { background: #e2e3e5; color: #383d41; }
+.badge-registrar { background: #e3f2fd; color: #0b4d94; }
+.badge-administrator { background: #d4edda; color: #1e7e34; }
+.badge-incomplete { background: #e2e3e5; color: #383d41; }
+
+/* Document Verification: per-student completion / approval progress bars */
+.progress-bar-track { background: #e4e4e4; border-radius: 6px; height: 8px; margin-top: 6px; overflow: hidden; }
+.progress-bar-fill { background: var(--blue); height: 100%; border-radius: 6px; transition: width .2s ease; }
+.progress-bar-fill-verified { background: var(--green); }
+
+/* Academic Management: subject-to-grade-level checkbox groups */
+.form-checkbox-group { display: flex; flex-wrap: wrap; gap: 4px 14px; font-weight: normal !important; }
+.form-checkbox-group .checkbox-label { margin-top: 0 !important; font-size: 12px; }
+
+.alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; font-size: 14px; }
+.alert-error { background: #fdecea; color: var(--danger); border: 1px solid #f5c6cb; }
+.alert-success { background: #e6f4ea; color: #1e5631; border: 1px solid #b7dfc0; }
+.alert-info { background: #e3f2fd; color: #0b4d94; border: 1px solid #b6dcfb; }
+.alert ul { margin: 0; padding-left: 18px; }
+
+/* School Directory (2026-08f) - dim rows an admin has disabled without
+   deleting them, same convention as .badge-inactive above. */
+.row-inactive { opacity: 0.55; }
+.row-inactive td { background: #fafafa; }
+
+.doc-list { list-style: none; padding: 0; }
+.doc-list li { padding: 6px 0; border-bottom: 1px solid var(--border); }
+.doc-review-form { flex-wrap: wrap; gap: 6px; }
+.doc-remarks-input { padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 12px; width: 140px; }
+
+/* ---------------------------------------------------------------------
+   Student photo / avatar
+   --------------------------------------------------------------------- */
+.student-avatar {
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%; overflow: hidden; background: #f0f0f0;
+  border: 1px solid var(--border); flex-shrink: 0;
+}
+.student-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.student-avatar-placeholder { flex-direction: column; color: var(--muted); text-align: center; gap: 2px; }
+.student-avatar .avatar-icon { fill: #b9bfb9; }
+.student-avatar .avatar-label { font-size: 10px; line-height: 1; }
+
+.avatar-sm { width: 42px; height: 42px; }
+.avatar-sm .avatar-icon { width: 18px; height: 18px; }
+.avatar-sm .avatar-label { display: none; }
+.avatar-md { width: 72px; height: 72px; }
+.avatar-md .avatar-icon { width: 30px; height: 30px; }
+.avatar-md .avatar-label { font-size: 10px; }
+
+/* Compact profile photo used on Student Registration / Student Profile.
+   ~100x100 (max 120x120) per modern SIS conventions - was previously 160px. */
+.avatar-lg { width: 100px; height: 100px; }
+.avatar-lg .avatar-icon { width: 34px; height: 34px; }
+.avatar-lg .avatar-label { font-size: 10px; margin-top: 1px; }
+
+/* Registration / edit form layout: compact photo panel pinned to the
+   upper-right, sized just wide enough to hug the 100px avatar so it never
+   pushes the rest of the form fields down or consumes extra width. */
+.student-form-layout { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; margin-bottom: 8px; }
+.student-form-fields { flex: 1 1 460px; min-width: 280px; order: 1; }
+.student-form-photo { flex: 0 0 132px; order: 2; }
+
+@media (max-width: 760px) {
+  .student-form-photo { order: -1; margin: 0 auto 18px; flex: 0 0 auto; }
+}
+
+.photo-upload-widget { display: flex; flex-direction: column; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 12px 10px; text-align: center; }
+.photo-drop-zone { border-radius: 50%; padding: 4px; transition: box-shadow .15s ease, background .15s ease; }
+.photo-drop-zone.drag-over { box-shadow: 0 0 0 3px var(--gold); background: #fffaf0; }
+.photo-actions { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.btn-block { width: 100%; }
+/* Compact button sizing so Upload/Change/Remove stay aligned with the
+   narrower 100px photo width instead of using the app's default button padding. */
+.photo-actions .btn-secondary { padding: 6px 4px; font-size: 12px; }
+.photo-actions .link-danger { font-size: 11px; }
+.photo-hint { font-size: 10px; margin: 2px 0 0; }
+.photo-error { color: var(--danger); font-size: 11px; margin: 0; min-height: 13px; }
+.field-error { color: var(--danger); font-size: 12px; font-weight: normal; min-height: 14px; display: block; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* Student Profile header */
+.student-profile-head { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+.student-profile-photo { flex-shrink: 0; }
+.student-profile-summary { flex: 1 1 320px; margin-bottom: 0; }
+.student-profile-summary th { width: 120px; }
+
+/* Digital Student ID (2026-08g; brand header + LRN/enrolled-gate added
+   2026-08l; full portrait-card redesign 2026-08m - see student/qr_code.php
+   and student/qr_code_print.php, which mirrors these class names in
+   assets/css/print.css for the printable version). */
+.id-card-wrap { display: flex; justify-content: center; }
+.id-card {
+  width: 100%; max-width: 700px; background: var(--bg-card, #fff);
+  border: 1px solid var(--border); border-radius: 10px; padding: 28px 32px;
+}
+.id-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.id-card-header-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.id-card-logo { width: 52px; height: 52px; object-fit: contain; flex-shrink: 0; }
+.id-card-school-name { font-weight: 700; color: var(--green-dark); font-size: 15px; line-height: 1.25; }
+.id-card-school-address { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.id-card-photo-box {
+  width: 92px; height: 108px; object-fit: cover; border: 1px solid var(--border); border-radius: 6px;
+  flex-shrink: 0; background: var(--bg-subtle, #f4f4f4);
+}
+.id-card-photo-placeholder {
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  color: var(--muted); font-size: 11px; padding: 4px;
+}
+.id-card-title { text-align: center; margin: 18px 0 16px; }
+.id-card-title h3 {
+  margin: 0; font-size: 17px; letter-spacing: 1px; color: var(--green-dark); text-transform: uppercase;
+}
+.id-card-divider { width: 70px; height: 3px; background: var(--green-dark); border-radius: 2px; margin: 8px auto 0; }
+.id-card-info { border-top: 1px solid var(--border); }
+.id-card-row {
+  display: flex; padding: 9px 2px; border-bottom: 1px solid var(--border); gap: 12px;
+}
+.id-card-label { flex: 0 0 140px; font-weight: 700; color: var(--text); }
+.id-card-value { flex: 1 1 auto; color: var(--text); word-break: break-word; min-width: 0; }
+.id-card-qr-section { text-align: center; margin-top: 22px; }
+.qr-code-box, .id-card-qr-box {
+  width: 150px; height: 150px; margin: 0 auto; display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--bg-subtle, #fafafa);
+}
+.qr-code-placeholder { font-size: 12px; color: var(--muted); text-align: center; padding: 0 10px; }
+.qr-code-image { width: 100%; height: 100%; object-fit: contain; padding: 8px; box-sizing: border-box; }
+.id-card-qr-fallback { font-size: 12px; color: var(--muted); text-align: center; padding: 0 12px; line-height: 1.5; }
+.id-card-qr-caption { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.id-card-footer {
+  text-align: center; font-size: 11px; color: var(--muted); margin-top: 22px; padding-top: 14px;
+  border-top: 1px solid var(--border); line-height: 1.5;
+}
+@media (max-width: 640px) {
+  .id-card { padding: 20px; }
+  .id-card-header { flex-direction: column; align-items: center; text-align: center; }
+  .id-card-header-left { flex-direction: column; text-align: center; }
+  .id-card-label { flex-basis: 110px; }
+}
+
+.report-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.report-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 18px; }
+.report-card h3 { margin-top: 0; color: var(--green-dark); font-size: 16px; }
+
+/* Login page */
+.login-body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #1e5631, #2e7d32); }
+.login-box { background: #fff; padding: 36px; border-radius: 10px; width: 100%; max-width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+.login-box h1 { margin: 0; color: var(--green-dark); text-align: center; }
+.login-box .subtitle { text-align: center; color: var(--muted); margin-bottom: 20px; font-size: 13px; }
+.login-box form { display: flex; flex-direction: column; gap: 6px; }
+.login-box label { font-size: 14px; font-weight: 600; margin-top: 8px; }
+.login-box input { padding: 10px; border: 1px solid var(--border); border-radius: 5px; font-size: 14px; }
+.login-box button { margin-top: 18px; }
+.login-logo { display: block; margin: 0 auto 10px; width: 64px; height: 64px; object-fit: contain; }
+.back-link { text-align: center; margin-top: 16px; font-size: 13px; }
+.back-link a { color: var(--muted); }
+
+/* Combined student/administrator login chooser (login.php) */
+.login-box-wide { max-width: 460px; }
+.login-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 4px; justify-content: center; }
+.login-tabs .btn-tab { flex: 1 1 100px; text-align: center; cursor: pointer; white-space: nowrap; }
+.login-panel { margin-top: 6px; }
+
+/* =======================================================================
+   Student Portal
+   ======================================================================= */
+
+/* Show/hide password toggle, used on the student login and change
+   password forms. */
+.password-field { position: relative; display: flex; }
+.password-field input { flex: 1; padding-right: 56px !important; }
+.password-toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--blue); font-size: 12px; cursor: pointer; padding: 4px 6px; }
+
+.checkbox-label { display: flex !important; flex-direction: row !important; align-items: center; gap: 6px; font-weight: normal !important; font-size: 13px; margin-top: 10px !important; }
+.checkbox-label input { width: auto !important; }
+
+.password-rules { list-style: none; padding: 0; margin: 10px 0; font-size: 12px; color: var(--muted); }
+.password-rules li { padding: 2px 0; }
+.password-rules li::before { content: '\2022  '; }
+.password-rules li.rule-valid { color: var(--green-dark); }
+.password-rules li.rule-valid::before { content: '\2713  '; }
+
+/* Sidebar unread-notification badge */
+.sidebar-badge { display: inline-block; background: var(--danger); color: #fff; border-radius: 10px; padding: 1px 7px; font-size: 11px; margin-left: 4px; }
+.sidebar-icon { display: inline-block; width: 20px; margin-right: 10px; text-align: center; }
+
+/* Dashboard quick-access cards */
+.quick-access-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin: 20px 0; }
+.quick-access-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 18px 14px; text-align: center; text-decoration: none; color: var(--green-dark); font-weight: 600; font-size: 14px; transition: box-shadow .15s ease, transform .15s ease; }
+.quick-access-card:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.08); transform: translateY(-2px); }
+
+.dashboard-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+@media (max-width: 900px) { .dashboard-columns { grid-template-columns: 1fr; } }
+
+/* Notifications */
+.notification-list { list-style: none; padding: 0; margin: 0; }
+.notification-list li { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.notification-list li:last-child { border-bottom: none; }
+.notification-list li.notification-unread { background: #fffaf0; border-radius: 6px; padding: 10px 10px; }
+.notification-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+.notification-list p { margin: 4px 0 0; }
+
+/* Announcements (student view) */
+.announcement-unread { border-left: 4px solid var(--gold); background: #fffaf0; }
+
+/* Enrollment Status progress tracker */
+.progress-tracker { display: flex; list-style: none; padding: 0; margin: 20px 0; flex-wrap: wrap; }
+.progress-step { flex: 1 1 140px; text-align: center; position: relative; padding-top: 10px; }
+.progress-step:not(:first-child)::before { content: ''; position: absolute; top: 28px; left: -50%; width: 100%; height: 2px; background: var(--border); z-index: 0; }
+.progress-dot { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background: #fff; border: 2px solid var(--border); color: var(--muted); font-weight: 700; position: relative; z-index: 1; }
+.progress-label { display: block; margin-top: 8px; font-size: 12px; color: var(--muted); }
+.progress-step-done .progress-dot { background: var(--green); border-color: var(--green); color: #fff; }
+.progress-step-done:not(:first-child)::before { background: var(--green); }
+.progress-step-done .progress-label { color: var(--green-dark); font-weight: 600; }
+.progress-step-current .progress-dot { background: var(--gold); border-color: var(--gold); color: #fff; }
+.progress-step-current .progress-label { color: #8a6d1d; font-weight: 600; }
+
+@media (max-width: 700px) {
+  .progress-tracker { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .progress-step { display: flex; align-items: center; gap: 10px; text-align: left; flex: 1 1 auto; padding-top: 4px; }
+  .progress-step:not(:first-child)::before { display: none; }
+  .progress-label { margin-top: 0; }
+}
+
+/* =======================================================================
+   About SABNAHIS module (2026-08)
+   ======================================================================= */
+.about-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+.about-tabs a { padding: 8px 14px; border-radius: 20px; text-decoration: none; color: var(--text); font-size: 13px; border: 1px solid var(--border); }
+.about-tabs a.active { background: var(--green-dark); color: #fff; border-color: var(--green-dark); }
+.about-tabs a.about-tabs-preview { margin-left: auto; color: var(--blue); border-color: var(--blue); }
+
+.about-image-field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 4px; }
+.about-image-field img { max-width: 260px; max-height: 140px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); display: block; }
+.about-preview-logo, .about-preview-principal, .about-preview-signature { max-width: 140px !important; max-height: 140px !important; }
+
+.rich-editor { background: #fff; min-height: 140px; }
+.ql-editor { min-height: 140px; }
+
+.about-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.about-admin-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.about-admin-card img { width: 100%; height: 150px; object-fit: cover; display: block; }
+.about-admin-card-body { padding: 14px; }
+.about-admin-card-body .actions { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+
+.inline-edit-row { display: none; }
+.inline-edit-row.is-open { display: table-row; }
+.about-admin-card .inline-edit-row.is-open { display: block; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
+
+.about-gallery-admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.about-gallery-admin-item { background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; cursor: grab; }
+.about-gallery-admin-item.is-dragging { opacity: 0.4; }
+.about-gallery-admin-item img { width: 100%; height: 150px; object-fit: cover; display: block; cursor: zoom-in; }
+.about-gallery-admin-item-body { padding: 12px; }
+.about-gallery-admin-item-body .actions { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+
+.about-lightbox {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 30px;
+}
+.about-lightbox[hidden] { display: none; }
+.about-lightbox img { max-width: 90vw; max-height: 80vh; object-fit: contain; border-radius: 6px; }
+.about-lightbox p { color: #fff; font-size: 14px; max-width: 80vw; text-align: center; }
+.about-lightbox-close { position: absolute; top: 20px; right: 30px; background: none; border: none; color: #fff; font-size: 32px; cursor: pointer; line-height: 1; }
+
+/* Principal's Message panel (2026-08 redesign) */
+.principal-columns { display: grid; grid-template-columns: 260px 1fr; gap: 28px; align-items: start; }
+@media (max-width: 800px) { .principal-columns { grid-template-columns: 1fr; } }
+
+.principal-photo-card { background: #fbfbfb; border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+.principal-photo-preview { width: 220px; height: 220px; margin: 0 auto 12px; border-radius: 50%; overflow: hidden; background: #eee; border: 3px solid #fff; box-shadow: 0 0 0 1px var(--border); }
+.principal-photo-preview img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; }
+.principal-photo-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: var(--muted); background: #f0f0f0; }
+.principal-photo-placeholder .avatar-icon { width: 64px; height: 64px; fill: #b9bfb9; }
+.principal-photo-placeholder span { font-size: 12px; }
+
+.principal-photo-actions { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.principal-photo-actions button, .principal-photo-actions a { width: 100%; text-align: center; }
+
+.image-info-list { list-style: none; padding: 0; margin: 10px 0; font-size: 12px; color: var(--muted); text-align: left; }
+.image-info-list li { padding: 2px 0; }
+.image-hint { font-size: 11px; text-align: left; margin: 8px 0 0; }
+
+.principal-info-fields .form-row { margin-bottom: 12px; }
+.principal-signature-card { background: #fbfbfb; border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-top: 10px; }
+.principal-signature-preview { min-height: 60px; display: flex; align-items: center; margin: 8px 0; }
+.principal-signature-preview img { max-height: 70px; cursor: zoom-in; }
+
+.principal-save-actions { flex-wrap: wrap; align-items: center; }
+
+.principal-live-preview { margin-top: 24px; padding-top: 20px; border-top: 1px dashed var(--border); }
+.principal-live-preview h4 { margin-bottom: 2px; }
+
+/* Square image-crop modal (Cropper.js, CDN) used by the Principal Photo
+   Upload/Replace flow (assets/js/about_principal_admin.js).
+   NOTE: this wrapper is intentionally named .photo-crop-modal, NOT
+   .cropper-modal - Cropper.js's own stylesheet (loaded from CDN in
+   about_content.php, AFTER this file) defines its own .cropper-modal
+   class for its internal crop-overlay dimming, with position: absolute.
+   Reusing that name here let Cropper.js's rule win the cascade (same
+   specificity, later in source order) and silently downgrade this from a
+   full-screen position: fixed overlay to an in-flow absolutely-positioned
+   box, which is what caused it to render squashed into the page instead
+   of covering the screen. Do not rename this back to .cropper-modal. */
+.photo-crop-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.photo-crop-modal[hidden] { display: none; }
+.photo-crop-modal-inner { background: #fff; border-radius: 10px; padding: 20px; width: 100%; max-width: 520px; }
+.cropper-canvas-wrap { width: 100%; height: 340px; background: #333; margin: 12px 0; }
+.cropper-canvas-wrap img { display: block; max-width: 100%; }
+.cropper-controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+
+/* Class Schedule */
+.schedule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.schedule-day-card h3 { margin-top: 0; color: var(--green-dark); font-size: 15px; }
+.schedule-list { list-style: none; padding: 0; margin: 0; }
+.schedule-list li { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.schedule-list li:last-child { border-bottom: none; }
